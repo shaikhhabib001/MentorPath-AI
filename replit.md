@@ -91,13 +91,19 @@ The application has two workflows configured:
   - Changed port from 3000 to 5000
   - Added host: '0.0.0.0' for Replit compatibility
   - Updated proxy to point to backend on port 3001
-  - Configured HMR for Replit's iframe environment
+  - Configured HMR to work with Replit's HTTPS proxy (overlay disabled for stability)
 - Updated backend CORS configuration:
-  - Added support for Replit domains
-  - Configured to accept requests from all origins in development
-  - Added REPLIT_DEV_DOMAIN environment variable support
+  - **Security**: Origin callback properly rejects unauthorized origins
+  - Production allowlist includes REPLIT_DEV_DOMAIN when available
+  - Development mode allows localhost:5000 and localhost:3000
+- Added production static file serving:
+  - Express serves built React app from client/dist in production
+  - API routes properly return JSON 404 for unknown endpoints
+  - React Router catchall handles SPA routing in production
 - Created workflows for frontend and backend
 - Configured deployment settings for VM deployment
+  - Build: Installs dependencies and builds frontend
+  - Run: Starts MongoDB, then Express server in production mode
 
 ## API Endpoints
 
