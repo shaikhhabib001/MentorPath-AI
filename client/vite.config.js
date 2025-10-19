@@ -11,10 +11,15 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000,
+    port: 5000,
+    host: '0.0.0.0',
+    strictPort: true,
+    hmr: {
+      overlay: false
+    },
     proxy: {
       '/api': {
-        target: 'http://localhost:3000', // Ensure this matches your backend's URL and port
+        target: 'http://localhost:3001',
         changeOrigin: true
       }
     }
