@@ -11,6 +11,7 @@ require('dotenv').config();
 const cvRoutes = require('./routes/cv');
 const chatRoutes = require('./routes/chat');
 const jobRoutes = require('./routes/jobs');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 
@@ -76,9 +77,10 @@ app.get('/api/health', (req, res) => {
 app.use('/api/cv', cvRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/jobs', jobRoutes);
+app.use('/api/auth', authRoutes);
 
 // API 404 handler - must come before static file serving
-app.use('/api/*', (req, res) => {
+app.use('/api', (req, res) => {
   res.status(404).json({
     success: false,
     message: `Route ${req.originalUrl} not found`
@@ -91,7 +93,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(clientBuildPath));
   
   // Handle React Router - serve index.html for all non-API routes
-  app.get('*', (req, res) => {
+  app.use((req, res) => {
     res.sendFile(path.join(clientBuildPath, 'index.html'));
   });
 }

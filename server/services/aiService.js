@@ -1,9 +1,12 @@
-const axios = require('axios');
+const { GoogleGenAI } = require('@google/genai');
 
 class AIService {
   constructor() {
     this.openaiApiKey = process.env.OPENAI_API_KEY;
-    this.apiUrl = process.env.BASE_URL ||'https://api.openai.com/v1';
+    this.provider = process.env.AI_PROVIDER || 'gemini';
+    this.ai = this.openaiApiKey
+      ? new GoogleGenAI({ apiKey: this.openaiApiKey })
+      : null;
     this.fallbackEnabled = true;
   }
 
@@ -179,21 +182,33 @@ class AIService {
       throw new Error('OpenAI API key not configured');
     }
 
-    const response = await axios.post(this.apiUrl, {
-      model: "gemini-2.5-flash",
-      messages: Array.isArray(messages) ? messages : [{ role: "user", content: messages }],
-      temperature: temperature,
-      max_tokens: maxTokens,
-      response_format: { type: "json_object" }
-    }, {
-      headers: {
-        'Authorization': `Bearer ${this.openaiApiKey}`,
-        'Content-Type': 'application/json'
-      },
-      timeout: 30000
+    if (this.provider !== 'gemini') {
+      throw new Error(`Unsupported AI provider: ${this.provider}`);
+    }
+
+    const inputMessages = Array.isArray(messages)
+      ? messages
+      : [{ role: 'user', content: messages }];
+    const systemMessage = inputMessages.find((message) => message.role === 'system');
+    const contents = inputMessages
+      .filter((message) => message.role !== 'system')
+      .map((message) => ({
+        role: message.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: message.content }]
+      }));
+
+    const response = await this.ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents,
+      config: {
+        systemInstruction: systemMessage?.content,
+        temperature,
+        maxOutputTokens: maxTokens,
+        responseMimeType: 'application/json'
+      }
     });
 
-    return response.data.choices[0].message.content;
+    return response.text;
   }
 
   parseCVAnalysisResponse(response) {

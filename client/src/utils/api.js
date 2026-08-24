@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+// Use the Vite proxy by default so preview and production do not depend on
+// a hardcoded local backend port.
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -134,27 +136,27 @@ export const jobsAPI = {
 };
 
 // Auth API endpoints
-// export const authAPI = {
-//   register: async (userData) => {
-//     const response = await api.post('/auth/register', userData);
-//     return response.data;
-//   },
-  
-//   login: async (credentials) => {
-//     const response = await api.post('/auth/login', credentials);
-//     return response.data;
-//   },
-  
-//   getProfile: async () => {
-//     const response = await api.get('/auth/me');
-//     return response.data;
-//   },
-  
-//   updateProfile: async (profileData) => {
-//     const response = await api.put('/auth/profile', profileData);
-//     return response.data;
-//   }
-// };
+export const authAPI = {
+  register: async (userData) => {
+    const response = await api.post('/auth/register', userData);
+    return response.data;
+  },
+
+  login: async (credentials) => {
+    const response = await api.post('/auth/login', credentials);
+    return response.data;
+  },
+
+  getProfile: async () => {
+    const response = await api.get('/auth/me');
+    return response.data;
+  },
+
+  updateProfile: async (profileData) => {
+    const response = await api.put('/auth/profile', profileData);
+    return response.data;
+  }
+};
 
 // Health check
 export const healthCheck = async () => {

@@ -53,10 +53,6 @@ externalPort = 3001
 localPort = 5000
 externalPort = 80
 
-[[ports]]
-localPort = 42759
-externalPort = 3000
-
 [deployment]
 deploymentTarget = "vm"
 run = ["bash", "-c", "mkdir -p data/db && mongod --dbpath=./data/db --port 27017 --fork --logpath ./data/mongodb.log && cd server && npm install && NODE_ENV=production node server.js"]

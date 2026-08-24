@@ -108,6 +108,28 @@ exports.getCVAnalysis = async (req, res) => {
   }
 };
 
+exports.getAllCVs = async (req, res) => {
+  try {
+    const cvs = await CV.find({})
+      .sort({ analysisDate: -1 })
+      .select('sessionId originalName analysisDate status analysis.summary');
+
+    res.status(200).json({
+      success: true,
+      data: {
+        cvs,
+        count: cvs.length
+      }
+    });
+  } catch (error) {
+    console.error('Get CVs error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching CVs'
+    });
+  }
+};
+
 exports.getSessionCVs = async (req, res) => {
   try {
     const { sessionId } = req.params;
